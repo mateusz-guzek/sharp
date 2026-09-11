@@ -1,6 +1,6 @@
 # Autocomplete
 
-Classes: `Code16\Sharp\Form\Fields\SharpFormAutocompleteLocalField` and `Code16\Sharp\Form\Fields\SharpFormAutocompleteRemoteField` 
+Classes: `Code16\Sharp\Form\Fields\SharpFormAutocompleteLocalField`, `Code16\Sharp\Form\Fields\SharpFormAutocompleteRemoteField` and `Code16\Sharp\Form\Fields\SharpFormAutocompleteRemoteMultipleField`.
 
 ## Configuration for local autocomplete
 
@@ -118,6 +118,25 @@ SharpFormAutocompleteRemoteField::make('model')
 
 The default endpoint would be `/brands/france/renault`.
 
+## Multiple remote autocomplete
+
+Use `SharpFormAutocompleteRemoteMultipleField` when several values can be selected from a remote data source. It supports the same configuration methods as `SharpFormAutocompleteRemoteField`:
+
+```php
+SharpFormAutocompleteRemoteMultipleField::make('customers')
+    ->setRemoteCallback(function (string $search) {
+        return Customer::query()
+            ->select('id', 'name', 'email')
+            ->where('name', 'like', "%{$search}%")
+            ->limit(20)
+            ->get();
+    })
+    ->setListItemTemplate('<div>{{ $name }}</div><div><small>{{ $email }}</small></div>')
+    ->setResultItemTemplate('{{ $name }}');
+```
+
+The value passed to `find()` must be an iterable of objects or arrays containing the configured item ID and every attribute used by the item templates. The formatted value returned by `update()` is an array of selected item IDs.
+
 
 ## Common configuration for both modes
 
@@ -165,8 +184,8 @@ If **mode=local**, you must pass there either:
 - a single id, since the label will be grabbed from the `localValues` array,
 - or an object with an `id` (or whatever was configured through `setItemIdAttribute()`) property.
 
-If **mode=remote**, you must pass an object with at least an `id` (or whatever was configured through `setItemIdAttribute()`) attribute and all attributes needed by the item templates.
+If **mode=remote**, you must pass an object with at least an `id` (or whatever was configured through `setItemIdAttribute()`) attribute and all attributes needed by the item templates. For `SharpFormAutocompleteRemoteMultipleField`, pass an iterable of such objects.
 
 ### `fromFront`
 
-Returns the selected item id.
+Returns the selected item ID. For `SharpFormAutocompleteRemoteMultipleField`, returns an array of selected item IDs.

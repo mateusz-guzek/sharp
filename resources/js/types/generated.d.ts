@@ -312,13 +312,19 @@ export type FormAutocompleteLocalFieldData = {
 export type FormAutocompleteRemoteFieldData = {
   value?:
     | FormAutocompleteItemData
-    | { [locale: string]: FormAutocompleteItemData };
+    | Array<FormAutocompleteItemData>
+    | {
+        [locale: string]:
+          | FormAutocompleteItemData
+          | Array<FormAutocompleteItemData>;
+      };
   key: string;
   type: "autocomplete";
   mode: "remote";
   itemIdAttribute: string;
   searchMinChars: number;
   debounceDelay: number;
+  multiple: boolean;
   remoteEndpoint: string | null;
   callbackLinkedFields: Array<string> | null;
   placeholder: string | null;

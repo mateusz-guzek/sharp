@@ -3,6 +3,7 @@
     import type { Component } from 'vue';
     import { isCustomField, resolveCustomField } from "@/utils/fields";
     import Autocomplete from "./fields/Autocomplete.vue";
+    import AutocompleteRemoteMultiple from "./fields/AutocompleteRemoteMultiple.vue";
     import Check from "./fields/Check.vue";
     import Date from "./fields/Date.vue";
     import Editor from "./fields/editor/Editor.vue";
@@ -39,6 +40,14 @@
         'upload': Upload
     };
 
+    function resolveFieldComponent(field: FormFieldData): Component | undefined {
+        if (field.type === 'autocomplete' && field.mode === 'remote' && field.multiple) {
+            return AutocompleteRemoteMultiple;
+        }
+
+        return isCustomField(field.type) ? resolveCustomField(field.type) : components[field.type];
+    }
+
     function onError(error: string) {
         form.setError(props.fieldErrorKey, error);
         if('localized' in props.field && props.field.localized) {
@@ -71,9 +80,9 @@
 </script>
 
 <template>
-    <template v-if="field && (isCustomField(field.type) ? resolveCustomField(field.type) : components[field.type])">
+    <template v-if="field && resolveFieldComponent(field)">
         <component
-            :is="isCustomField(field.type) ? resolveCustomField(field.type) : components[field.type]"
+            :is="resolveFieldComponent(field)"
             v-bind="props"
             :has-error="form.fieldHasError(field, fieldErrorKey, locale)"
             @error="onError"

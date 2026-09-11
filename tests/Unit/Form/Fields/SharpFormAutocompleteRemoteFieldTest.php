@@ -15,6 +15,7 @@ it('sets default values for remote autocomplete', function () {
             'itemIdAttribute' => 'id',
             'searchMinChars' => 1,
             'debounceDelay' => 300,
+            'multiple' => false,
         ]);
 });
 

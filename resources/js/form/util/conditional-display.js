@@ -40,10 +40,16 @@ export function computeCondition(fields, data, condition) {
 
 
         if(field.type === 'autocomplete' || field.type === 'select' || field.type === 'tags') {
+            const isMultipleAutocomplete = field.type === 'autocomplete' && field.multiple;
             res = helpers.computeSelectCondition({
                 condValues: condField.values,
-                fieldValue: field.type === 'autocomplete' ? value && value.id : value,
-                isSingleSelect: field.type === 'select' && !field.multiple || field.type === 'autocomplete'
+                fieldValue: field.type === 'autocomplete'
+                    ? isMultipleAutocomplete
+                        ? (value ?? []).map(item => item[field.itemIdAttribute])
+                        : value && value[field.itemIdAttribute]
+                    : value,
+                isSingleSelect: field.type === 'select' && !field.multiple
+                    || field.type === 'autocomplete' && !field.multiple
             });
         }
         else if(field.type === 'check') {
